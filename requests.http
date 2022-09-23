@@ -1,0 +1,24 @@
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+    "username": "user1",
+    "password": "password1"
+}
+###
+GET http://localhost:8080/users?id=someStingId
+Authorization: 43097888212920155
+
+
+###
+PUT http://localhost:8080/users?id=someStingId
+Authorization: 17487096492332577
+Content-Type: application/json
+
+{
+    "name": "Nika",
+    "age": 18,
+    "email": "grigorivvveronika@gmail.ua",
+    "workingPosition": 3,
+    
+}
