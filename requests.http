@@ -7,18 +7,26 @@ Content-Type: application/json
 }
 ###
 GET http://localhost:8080/users?id=someStingId
-Authorization: 43097888212920155
+Authorization: 46134297887903
 
 
 ###
-PUT http://localhost:8080/users?id=someStingId
-Authorization: 17487096492332577
+GET http://localhost:8080/users?name=Victor
+Authorization: 1873954907296942
+
+###
+DELETE http://localhost:8080/users?id=72gxdnckgdy
+Authorization: 7213208700860898
+
+
+###
+PUT http://localhost:8080/users
+Authorization: 1873954907296942
 Content-Type: application/json
 
 {
-    "name": "Nika",
-    "age": 18,
-    "email": "grigorivvveronika@gmail.ua",
-    "workingPosition": 3,
-    
-}
+    "name": "Katya",
+    "age": 30,
+    "email": "lanadelrey@gmail.ua",
+    "workingPosition": 1
+} 

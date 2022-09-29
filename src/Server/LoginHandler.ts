@@ -28,10 +28,8 @@ export class LoginHandler extends BaseRequestHandler{
     private async handlePost(){
         try {
             const body:Account = await this.getRequestBody();
-            console.log(body)
-    
             const sessionToken= await this.tokenGenerator.generateToken(body);
-            console.log(sessionToken)
+    
             if(sessionToken){
                 this.res.statusCode=HTTP_CODES.CREATED
                 this.res.writeHead(HTTP_CODES.CREATED, {'Content-Type': 'application/json'})

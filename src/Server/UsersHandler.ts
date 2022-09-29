@@ -26,37 +26,69 @@ export class UsersHandler extends BaseRequestHandler{
             case HTTP_METHODS.PUT:
                 await this.handlePut()
                 break;
+            case HTTP_METHODS.DELETE:
+                    await this.handleDelete()
+                    break;
             default:
                 this.handleNotFound()
                 break;
         }
     }
+    private async handleDelete(){
+        const operationAutorized= await this.operationAutorized(AccessRight.DELETE)
+        if(operationAutorized){
+            const parsedUrl=Utils.getUrlParameters(this.req.url);
+            if (parsedUrl) {
+                if (parsedUrl.query.id){
+                    const deleteResult= this.userDbAccess.deleteUser(parsedUrl.query.id as string)
+                    if(await deleteResult){
+                        this.respondText(HTTP_CODES.OK, `user ${parsedUrl.query.name} was deleted`)
+                    }else{
+                        this.respondText(HTTP_CODES.NOT_FOUND, `user ${parsedUrl.query.id} was NOT found`)
+                    }
+                }else {
+                    this.respondBadRequest("missing or invalid ID")
+                }
+            }else{
+                this.respondText(HTTP_CODES.BAD_REQUEST,"URL was not parsed")
+            }
+        }
+    }
     private async handlePut(){
         const operationAutorized= await this.operationAutorized(AccessRight.CREATE)
         if(operationAutorized){
-            const user: User= await this.getRequestBody();
-            await this.userDbAccess.putUser(user)
-            this.respondText(HTTP_CODES.CREATED, `user ${user.name} is updated`)
+            try {
+                const user: User = await this.getRequestBody();
+                await this.userDbAccess.putUser(user);
+                this.respondText(HTTP_CODES.CREATED, `user ${user.name} created`);
+            } catch (error:Error|any) {
+                this.respondBadRequest(error.message);
+            }
         }else{
-            this.respondBadRequest("bad req")
+            this.respondBadRequest("missing or invalid token")
         }
     }
+
+
+
     private async handleGet() {
         const operationAutorized= await this.operationAutorized(AccessRight.READ)
         if(operationAutorized){
                     const parsedUrl=Utils.getUrlParameters(this.req.url);
         if (parsedUrl) {
-            const userId = parsedUrl.query.id
-            if (userId) {
-                const user = await this.userDbAccess.getUserById(userId as string);
-                console.log(user)
-                if (user) {
-                    this.respondJsonObject(HTTP_CODES.OK, user);
-                } else {
-                    this.handleNotFound();
-                }
-            } else {
-                this.respondBadRequest('userId not present in request');
+            if (parsedUrl.query.id) {
+                const user = await this.userDbAccess.getUserById(parsedUrl.query.id as string);
+                    if (user) {
+                        this.respondJsonObject(HTTP_CODES.OK, user);
+                    } else {
+                        this.handleNotFound();
+                    }
+            } else if(parsedUrl.query.name){
+                const users = await this.userDbAccess.getUserByName(parsedUrl.query.name as string);
+                this.respondJsonObject(HTTP_CODES.OK, users);
+            }
+            else {
+                this.respondBadRequest('userId or name is not present in request');
             }
 
     }
